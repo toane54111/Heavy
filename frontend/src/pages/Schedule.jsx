@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Plus, BookOpen, Clock, Users, MapPin } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { timetableApi } from '../api/timetableApi';
+import './Schedule.css';
 
 const localizer = momentLocalizer(moment);
 
@@ -146,81 +147,73 @@ const Schedule = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="schedule-container">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Thời Khóa Biểu</h1>
-          <p className="text-gray-600">Quản lý lịch học và thời khóa biểu cá nhân</p>
+      <div className="schedule-header">
+        <div className="schedule-header-content">
+          <h1>Thời Khóa Biểu</h1>
+          <p>Quản lý lịch học và thời khóa biểu cá nhân</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="btn-primary flex items-center space-x-2"
+          className="schedule-add-button"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={20} />
           <span>Thêm Tiết Học</span>
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BookOpen className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Tổng môn học</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {[...new Set(events.map(event => event.subject))].length}
-              </p>
+      <div className="schedule-stats">
+        <div className="schedule-stat-card">
+          <div className="schedule-stat-icon blue">
+            <BookOpen size={24} />
+          </div>
+          <div className="schedule-stat-content">
+            <div className="schedule-stat-label">Tổng môn học</div>
+            <div className="schedule-stat-value">
+              {[...new Set(events.map(event => event.subject))].length}
             </div>
           </div>
         </div>
 
-        <div className="card">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Clock className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Tiết học/tuần</p>
-              <p className="text-2xl font-bold text-gray-900">{events.length}</p>
+        <div className="schedule-stat-card">
+          <div className="schedule-stat-icon green">
+            <Clock size={24} />
+          </div>
+          <div className="schedule-stat-content">
+            <div className="schedule-stat-label">Tiết học/tuần</div>
+            <div className="schedule-stat-value">{events.length}</div>
+          </div>
+        </div>
+
+        <div className="schedule-stat-card">
+          <div className="schedule-stat-icon purple">
+            <Users size={24} />
+          </div>
+          <div className="schedule-stat-content">
+            <div className="schedule-stat-label">Giáo viên</div>
+            <div className="schedule-stat-value">
+              {[...new Set(events.map(event => event.teacher))].length}
             </div>
           </div>
         </div>
 
-        <div className="card">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Giáo viên</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {[...new Set(events.map(event => event.teacher))].length}
-              </p>
-            </div>
+        <div className="schedule-stat-card">
+          <div className="schedule-stat-icon orange">
+            <MapPin size={24} />
           </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <MapPin className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Phòng học</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {[...new Set(events.map(event => event.room))].length}
-              </p>
+          <div className="schedule-stat-content">
+            <div className="schedule-stat-label">Phòng học</div>
+            <div className="schedule-stat-value">
+              {[...new Set(events.map(event => event.room))].length}
             </div>
           </div>
         </div>
       </div>
 
       {/* Calendar */}
-      <div className="card">
+      <div className="schedule-calendar-container">
         <Calendar
           localizer={localizer}
           events={events}
@@ -253,134 +246,118 @@ const Schedule = () => {
 
       {/* Add Event Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">Thêm Tiết Học Mới</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Môn học *
-                  </label>
-                  <input
-                    type="text"
-                    list="subjects-list"
-                    value={newEvent.subject}
-                    onChange={(e) => setNewEvent({...newEvent, subject: e.target.value})}
-                    className="input-field"
-                    placeholder="Nhập tên môn học hoặc chọn từ danh sách"
-                    required
-                  />
-                  <datalist id="subjects-list">
-                    {subjects.map((subject, index) => (
-                      <option key={index} value={subject} />
-                    ))}
-                  </datalist>
-                  <p className="text-xs text-gray-500 mt-1">
-                    💡 Bạn có thể nhập tên môn học tự do hoặc chọn từ danh sách gợi ý
-                  </p>
-                </div>
+        <div className="schedule-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="schedule-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="schedule-modal-header">
+              <h2 className="schedule-modal-title">Thêm Tiết Học Mới</h2>
+            </div>
+            
+            <div className="schedule-modal-body">
+              <div className="schedule-form-group">
+                <label className="schedule-form-label">Môn học *</label>
+                <input
+                  type="text"
+                  list="subjects-list"
+                  value={newEvent.subject}
+                  onChange={(e) => setNewEvent({...newEvent, subject: e.target.value})}
+                  className="schedule-form-input"
+                  placeholder="Nhập tên môn học hoặc chọn từ danh sách"
+                  required
+                />
+                <datalist id="subjects-list">
+                  {subjects.map((subject, index) => (
+                    <option key={index} value={subject} />
+                  ))}
+                </datalist>
+                <p className="schedule-hint">
+                  💡 Bạn có thể nhập tên môn học tự do hoặc chọn từ danh sách gợi ý
+                </p>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Giáo viên
-                  </label>
-                  <input
-                    type="text"
-                    value={newEvent.teacher}
-                    onChange={(e) => setNewEvent({...newEvent, teacher: e.target.value})}
-                    className="input-field"
-                    placeholder="Tên giáo viên"
-                  />
-                </div>
+              <div className="schedule-form-group">
+                <label className="schedule-form-label">Giáo viên</label>
+                <input
+                  type="text"
+                  value={newEvent.teacher}
+                  onChange={(e) => setNewEvent({...newEvent, teacher: e.target.value})}
+                  className="schedule-form-input"
+                  placeholder="Tên giáo viên"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phòng học
-                  </label>
-                  <input
-                    type="text"
-                    value={newEvent.room}
-                    onChange={(e) => setNewEvent({...newEvent, room: e.target.value})}
-                    className="input-field"
-                    placeholder="Số phòng học"
-                  />
-                </div>
+              <div className="schedule-form-group">
+                <label className="schedule-form-label">Phòng học</label>
+                <input
+                  type="text"
+                  value={newEvent.room}
+                  onChange={(e) => setNewEvent({...newEvent, room: e.target.value})}
+                  className="schedule-form-input"
+                  placeholder="Số phòng học"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Màu sắc
-                  </label>
-                  <div className="flex space-x-2">
-                    {colors.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          newEvent.color === color ? 'border-gray-800' : 'border-gray-300'
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setNewEvent({...newEvent, color})}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mô tả
-                  </label>
-                  <textarea
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                    className="input-field"
-                    rows="3"
-                    placeholder="Ghi chú về buổi học..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bắt đầu
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
-                      onChange={(e) => setNewEvent({...newEvent, start: new Date(e.target.value)})}
-                      className="input-field"
+              <div className="schedule-form-group">
+                <label className="schedule-form-label">Màu sắc</label>
+                <div className="schedule-color-picker">
+                  {colors.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`schedule-color-option ${newEvent.color === color ? 'selected' : ''}`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setNewEvent({...newEvent, color})}
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Kết thúc
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
-                      onChange={(e) => setNewEvent({...newEvent, end: new Date(e.target.value)})}
-                      className="input-field"
-                    />
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex space-x-3 mt-6">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="btn-secondary flex-1"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={handleAddEvent}
-                  disabled={!newEvent.subject}
-                  className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Thêm vào thời khóa biểu
-                </button>
+              <div className="schedule-form-group">
+                <label className="schedule-form-label">Mô tả</label>
+                <textarea
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                  className="schedule-form-textarea"
+                  rows="3"
+                  placeholder="Ghi chú về buổi học..."
+                />
               </div>
+
+              <div className="schedule-form-row">
+                <div className="schedule-form-group">
+                  <label className="schedule-form-label">Bắt đầu</label>
+                  <input
+                    type="datetime-local"
+                    value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
+                    onChange={(e) => setNewEvent({...newEvent, start: new Date(e.target.value)})}
+                    className="schedule-form-input"
+                  />
+                </div>
+                <div className="schedule-form-group">
+                  <label className="schedule-form-label">Kết thúc</label>
+                  <input
+                    type="datetime-local"
+                    value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
+                    onChange={(e) => setNewEvent({...newEvent, end: new Date(e.target.value)})}
+                    className="schedule-form-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="schedule-modal-footer">
+              <button
+                onClick={() => setShowModal(false)}
+                className="schedule-button schedule-button-secondary"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleAddEvent}
+                disabled={!newEvent.subject}
+                className="schedule-button schedule-button-primary"
+              >
+                Thêm vào thời khóa biểu
+              </button>
             </div>
           </div>
         </div>

@@ -1,0 +1,83 @@
+/* AIQuestionnaire.css - Styling for AI Tư Vấn */
+
+.ai-questionnaire-container {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  position: relative;
+}
+
+.ai-header {
+  margin-bottom: 30px;
+}
+
+.ai-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.ai-subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.ai-empty-state {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 80px 40px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-empty-state::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.03));
+  pointer-events: none;
+}
+
+.ai-empty-icon {
+  width: 80px;
+  height: 80px;
+  color: #9ca3af;
+  margin: 0 auto 24px;
+  opacity: 0.5;
+}
+
+.ai-empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.ai-empty-description {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-questionnaire-container {
+    padding: 16px;
+  }
+  
+  .ai-title {
+    font-size: 2rem;
+  }
+  
+  .ai-empty-state {
+    padding: 60px 24px;
+  }
+}
+

@@ -2,8 +2,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiService from './api/apiService';
 import AppRoutes from './routes/AppRoutes';
-import Navbar from './componets/Navbar';
-import Sidebar from './componets/Sidebar';
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import './App.css';
 
 function App() {
@@ -12,17 +12,59 @@ function App() {
 
   useEffect(() => {
     // Kiểm tra kết nối backend khi component load (không bắt buộc)
-    apiService.get('/')
-      .then(response => {
-        setBackendStatus('✅ Đã kết nối: ' + response.data.message);
-        setIsConnected(true);
+    // Sử dụng timeout để tránh chặn render nếu backend không phản hồi
+    let timeoutId;
+    let isMounted = true;
+
+    try {
+      timeoutId = setTimeout(() => {
+        if (isMounted) {
+          setBackendStatus('⚠️ Backend chưa kết nối (Frontend vẫn hoạt động)');
+          setIsConnected(false);
+        }
+      }, 2000); // Timeout sau 2 giây
+
+      // Gọi API với timeout ngắn để không chặn render
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2000);
+
+      apiService.get('/', { 
+        timeout: 2000,
+        signal: controller.signal 
       })
-      .catch(error => {
-        // Không hiển thị lỗi, chỉ log để debug
-        console.log("Backend chưa sẵn sàng, frontend vẫn hoạt động bình thường");
+        .then(response => {
+          clearTimeout(timeout);
+          if (isMounted && response?.data) {
+            clearTimeout(timeoutId);
+            setBackendStatus('✅ Đã kết nối: ' + (response.data.message || 'Backend đã sẵn sàng'));
+            setIsConnected(true);
+          }
+        })
+        .catch(error => {
+          clearTimeout(timeout);
+          if (isMounted) {
+            clearTimeout(timeoutId);
+            // Không hiển thị lỗi, chỉ log để debug
+            if (error.code !== 'ERR_CANCELED' && error.code !== 'ECONNABORTED') {
+              console.log("Backend chưa sẵn sàng, frontend vẫn hoạt động bình thường");
+            }
+            setBackendStatus('⚠️ Backend chưa kết nối (Frontend vẫn hoạt động)');
+            setIsConnected(false);
+          }
+        });
+    } catch (error) {
+      // Bắt mọi lỗi không mong đợi
+      console.log("Lỗi khi kiểm tra backend:", error);
+      if (isMounted) {
         setBackendStatus('⚠️ Backend chưa kết nối (Frontend vẫn hoạt động)');
         setIsConnected(false);
-      });
+      }
+    }
+
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
