@@ -11,26 +11,29 @@ function App() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Kiểm tra kết nối backend khi component load
+    // Kiểm tra kết nối backend khi component load (không bắt buộc)
     apiService.get('/')
       .then(response => {
         setBackendStatus('✅ Đã kết nối: ' + response.data.message);
         setIsConnected(true);
       })
       .catch(error => {
-        console.error("Lỗi khi gọi API!", error);
-        setBackendStatus('❌ Không thể kết nối tới backend. Vui lòng kiểm tra backend có đang chạy không.');
+        // Không hiển thị lỗi, chỉ log để debug
+        console.log("Backend chưa sẵn sàng, frontend vẫn hoạt động bình thường");
+        setBackendStatus('⚠️ Backend chưa kết nối (Frontend vẫn hoạt động)');
         setIsConnected(false);
       });
   }, []);
 
   return (
     <BrowserRouter>
-      <div className="App min-h-screen bg-gray-50">
-        {/* Thông báo trạng thái kết nối backend */}
-        <div className={`${isConnected ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border-b px-4 py-2 text-sm text-center`}>
-          <strong>Trạng thái Backend:</strong> {backendStatus}
-        </div>
+      <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50">
+        {/* Thông báo trạng thái kết nối backend - có thể ẩn nếu muốn */}
+        {!isConnected && (
+          <div className="bg-yellow-50 border-yellow-200 border-b px-4 py-2 text-sm text-center animate-fade-in">
+            <strong>Trạng thái Backend:</strong> {backendStatus}
+          </div>
+        )}
 
         {/* Navigation */}
         <Navbar />
@@ -41,7 +44,7 @@ function App() {
           <Sidebar />
           
           {/* Nội dung chính */}
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-4 md:p-6 fade-in max-w-7xl mx-auto w-full">
             <AppRoutes />
           </main>
         </div>
