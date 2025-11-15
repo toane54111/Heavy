@@ -1,0 +1,49 @@
+# --- Backend (Python/FastAPI) ---
+
+# Môi trường ảo
+venv/
+*.venv/
+.venv/
+
+# Cache của Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Các file tạm
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# File biến môi trường (RẤT QUAN TRỌNG)
+.env
+.env.*
+!.env.example
+
+# --- Frontend (React/Vite/Node) ---
+
+# Thư viện
+node_modules/
+
+# File build
+dist/
+build/
+
+# File log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# File biến môi trường của Vite (RẤT QUAN TRỌNG)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache của Vite
+.vite/
+
+# --- IDE/OS files ---
+.vscode/
+.idea/
+*.DS_Store
